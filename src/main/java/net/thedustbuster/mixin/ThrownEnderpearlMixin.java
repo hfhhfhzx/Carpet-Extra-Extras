@@ -14,8 +14,6 @@ import net.minecraft.world.phys.Vec3;
 import net.thedustbuster.CarpetExtraExtrasSettings;
 import net.thedustbuster.adaptors.minecraft.worldgen.ChunkHelper;
 import net.thedustbuster.rules.enderpearls.PearlManager;
-import net.thedustbuster.util.Logger;
-import org.apache.commons.logging.Log;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -40,13 +38,10 @@ public abstract class ThrownEnderpearlMixin extends ThrowableItemProjectile {
   @Inject(method = "tick", at = @At(value = "HEAD"), cancellable = true)
   private void tick(CallbackInfo original) {
     if (!(this.level() instanceof ServerLevel serverLevel)) return;
-    boolean stuck = false;
 
     if (CarpetExtraExtrasSettings.enderPearlChunkLoadingFix || CarpetExtraExtrasSettings.trackEnderPearls) {
-      stuck = updatePearlManager(original, serverLevel);
+      if(updatePearlManager(original, serverLevel)) return;
     }
-
-    if (stuck) return;
 
     if (CarpetExtraExtrasSettings.pre21ThrowableEntityBehavior) {
       applyPre21Behavior(original);
